@@ -33,4 +33,5 @@ class SendCommentView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("blog:post-detail", kwargs={"pk": self.kwargs.get("pk")})
+        return reverse("blog:post-detail",
+                       kwargs={"pk": self.kwargs.get("pk")})
