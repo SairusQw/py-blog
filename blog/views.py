@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse
 from django.views import generic
 from django.views.generic import ListView, DetailView
 
@@ -20,18 +21,16 @@ class PostDetailView(DetailView):
     template_name = "blog/post_detail.html"
 
 
-class SendCommentView(LoginRequiredMixin, generic.View):
+class SendCommentView(LoginRequiredMixin, generic.CreateView):
     model = Commentary
     fields = ["content"]
+    template_name = "blog/post_detail.html"
 
-    def post(self, request, pk):
-        post = get_object_or_404(Post, id=pk)
-        content = request.POST.get("content")
-        if content and content.strip():
-            Commentary.objects.create(
-                post=post,
-                content=content,
-                user=request.user
-            )
+    def form_valid(self, form):
+        pk = self.kwargs.get("pk")
+        form.instance.post = Post.objects.get(id=pk)
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
-        return redirect("blog:post-detail", pk=pk)
+    def get_success_url(self):
+        return reverse("blog:post-detail", kwargs={"pk": self.kwargs.get("pk")})
