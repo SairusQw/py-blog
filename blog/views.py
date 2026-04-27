@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.views import generic
 from django.views.generic import ListView, DetailView
 
@@ -25,8 +25,13 @@ class SendCommentView(LoginRequiredMixin, generic.View):
     fields = ["content"]
 
     def post(self, request, pk):
-        post = Post.objects.get(id=pk)
-        comment = (Commentary.objects.
-                   create(post=post, content=request.POST.get("content")))
-        comment.save()
-        return redirect("blog:post-detail")
+        post = get_object_or_404(Post, id=pk)
+        content = request.POST.get("content")
+        if content and content.strip():
+            Commentary.objects.create(
+                post=post,
+                content=content,
+                user=request.user
+            )
+
+        return redirect("blog:post-detail", pk=pk)

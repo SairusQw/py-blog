@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
 {% block header %}<h1>Comments</h1>{% endblock %}
 {% block content %}
     {% for comment in post.comments.all %}
@@ -9,7 +10,7 @@
         </div>
     {% endfor %}
     {% if user.is_authenticated %}
-        <form action="{% url "blog:send-comment" post.id %}" method="post">
+        <form action="{% url 'blog:send-comment' post.id %}" method="post">
             {% csrf_token %}
             {{form|crispy}}
             <input type="submit" value="⌯⌲">

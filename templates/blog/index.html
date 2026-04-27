@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 {% block header %}<h1>Posts</h1>{% endblock %}
 {% block content %}
-    {% regroup post_list by created_time.date as date_list %}
+    {% regroup post_list by created_time|date:"Y-m-d" as date_list %}
     {% for date_group in date_list %}
         <h4 style="text-align: center">{{ date_group.grouper }}</h4>
-        {% for post in post_list %}
+        {% for post in date_group.list %}
         <div class="taskblock">
             <div class="headline">
-                <h3>{{post.title}}</h3>
+                <h3>
+                  <a href="{% url 'blog:post-detail' pk=post.id %}">{{ post.title }}</a>
+                </h3>
                 <p style="font-size: 12px">{{post.created_time.time}}</p>
             </div>
             <br>
